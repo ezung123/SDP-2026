@@ -1,36 +1,45 @@
 # Docker Hands-on Workshop (SDP 2026)
 
-This project contains a simple web application packaged and served with Nginx in a Docker container, designed for Docker and Kubernetes (Minikube) hands-on practice.
+This project contains a web application packaged and served with Nginx in a Docker container, designed for Docker and Kubernetes (Minikube) hands-on practice.
 
 ---
 
 ## 📁 Project Structure
 
-- `Dockerfile`: Nginx-based image definition copying `index.html` and `style.css`.
+- `Dockerfile`: Container image definition copying `index.html` and `style.css` into an Nginx image.
+- `docker-compose.yaml`: Docker Compose deployment file to run the multi-container / service configuration with Docker.
+- `deployment.yaml`: Kubernetes Deployment and Service manifest configured for `mevi-webv1` on Minikube.
 - `index.html`: Web page for the Docker workshop.
 - `style.css`: Styling for the web page.
-- `k8s-deployment.yaml`: Kubernetes Deployment and Service manifest for Minikube.
 
 ---
 
-## 🐳 Docker Commands
+## 🐳 Docker Deployment
 
-### 1. Build the Docker Image
+### Option A: Using Docker Compose (Recommended for Docker)
 ```bash
-docker build -t sdp-app:latest .
-```
+# Start container in background
+docker compose up -d
 
-### 2. Run the Container
-```bash
-docker run -d -p 8080:80 --name sdp-website sdp-app:latest
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f
+
+# Stop container
+docker compose down
 ```
 Access the application in your browser at: [http://localhost:8080](http://localhost:8080)
 
-### 3. Manage the Container
-- View running containers: `docker ps`
-- View container logs: `docker logs sdp-website`
-- Stop container: `docker stop sdp-website`
-- Remove container: `docker rm sdp-website`
+### Option B: Using Plain Docker CLI
+```bash
+# 1. Build image
+docker build -t mevi-webv1 .
+
+# 2. Run container
+docker run -d -p 8080:80 --name mevi-website mevi-webv1
+```
 
 ---
 
@@ -42,14 +51,13 @@ minikube start
 ```
 
 ### 2. Load Local Image into Minikube
-Since Minikube runs inside its own isolated environment, load your locally built Docker image into it:
 ```bash
-minikube image load sdp-app:latest
+minikube image load mevi-webv1
 ```
 
 ### 3. Deploy to Cluster
 ```bash
-kubectl apply -f k8s-deployment.yaml
+kubectl apply -f deployment.yaml
 ```
 
 ### 4. Check Status
@@ -60,9 +68,5 @@ kubectl get services
 
 ### 5. Access the Kubernetes Service
 ```bash
-minikube service sdp-service
-```
-Or forward the port directly:
-```bash
-kubectl port-forward service/sdp-service 8080:80
+minikube service mevi-web-service
 ```

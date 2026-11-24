@@ -1,0 +1,10 @@
+services:
+  mevi-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mevi-webv1
+    container_name: mevi-website
+    ports:
+      - "8080:80"
+    restart: unless-stopped
