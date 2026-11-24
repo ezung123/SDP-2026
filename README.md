@@ -7,39 +7,26 @@ This project contains a web application packaged and served with Nginx in a Dock
 ## 📁 Project Structure
 
 - `Dockerfile`: Container image definition copying `index.html` and `style.css` into an Nginx image.
-- `docker-compose.yaml`: Docker Compose deployment file to run the multi-container / service configuration with Docker.
-- `deployment.yaml`: Kubernetes Deployment and Service manifest configured for `mevi-webv1` on Minikube.
+- `kubernetes/`:
+  - `deployment.yaml`: Kubernetes Deployment manifest configuring 3 replicas of `mevi-web:v1`.
+  - `service.yaml`: Kubernetes NodePort Service manifest exposing `mevi-web` on port 80 (NodePort 30080).
 - `index.html`: Web page for the Docker workshop.
 - `style.css`: Styling for the web page.
 
 ---
 
-## 🐳 Docker Deployment
+## 🐳 Docker Commands
 
-### Option A: Using Docker Compose (Recommended for Docker)
+### 1. Build Image
 ```bash
-# Start container in background
-docker compose up -d
+docker build -t mevi-web:v1 .
+```
 
-# Check status
-docker compose ps
-
-# View logs
-docker compose logs -f
-
-# Stop container
-docker compose down
+### 2. Run Container
+```bash
+docker run -d -p 8080:80 --name my-website mevi-web:v1
 ```
 Access the application in your browser at: [http://localhost:8080](http://localhost:8080)
-
-### Option B: Using Plain Docker CLI
-```bash
-# 1. Build image
-docker build -t mevi-webv1 .
-
-# 2. Run container
-docker run -d -p 8080:80 --name mevi-website mevi-webv1
-```
 
 ---
 
@@ -52,12 +39,12 @@ minikube start
 
 ### 2. Load Local Image into Minikube
 ```bash
-minikube image load mevi-webv1
+minikube image load mevi-web:v1
 ```
 
 ### 3. Deploy to Cluster
 ```bash
-kubectl apply -f deployment.yaml
+kubectl apply -f kubernetes/
 ```
 
 ### 4. Check Status
@@ -68,5 +55,5 @@ kubectl get services
 
 ### 5. Access the Kubernetes Service
 ```bash
-minikube service mevi-web-service
+minikube service mevi-web
 ```
